@@ -111,26 +111,12 @@ public class ValidationTest {
 //        assertTrue(validation().val(150).min(100).isValid());
 //        assertFalse(validation().val(98).min(100).isValid());
 //
-//        assertTrue(validation().val(50).max(100).isValid());
-//        assertFalse(validation().val(150).max(100).isValid());
-//
-//        assertTrue(validation().val(100).max(100).isValid());
-//        assertTrue(validation().val(100).min(100).isValid());
+//          assertTrue(validation().val(100).min(100).isValid());
 //
 //        assertTrue(validation().val(100, 150).min().isValid());
 //        assertFalse(validation().val(100, 98).min().isValid());
+////        //--
 //
-//        assertTrue(validation().val(100, 50).max().isValid());
-//        assertFalse(validation().val(100, 150).max().isValid());
-//        //--
-//        assertFalse(validation().val(100, 50).equals().isValid());
-//        assertTrue(validation().val(100, 100).equals().isValid());
-//
-//        assertFalse(validation().val(100).equals(50).isValid());
-//        assertTrue(validation().val(100).equals(100).isValid());
-//
-//        assertFalse(validation().equals(100, 50).isValid());
-//        assertTrue(validation().equals(100, 100).isValid());
 //        //--
 //        assertTrue(validation().val(100, 50).isNotEquals().isValid());
 //        assertFalse(validation().val(100, 100).isNotEquals().isValid());
@@ -376,6 +362,94 @@ public class ValidationTest {
 
             fail("Fail to ThrowException------------------isBoolean");
         } catch (ProcessException expectedException) {
+        }
+    }
+
+    @Test
+    public void isTrue() {
+        assertTrue(validation().val(true).isTrue().isValid());
+        assertFalse(validation().val(false).isTrue().isValid());
+        assertFalse(validation().isTrue(true, false, true).isValid());
+        assertTrue(validation().val(true, true, true).isTrue().isValid());
+        assertTrue(validation().isTrue(true, true, true).isValid());
+
+        try {
+            validation().val("text").isTrue().throwValidate();
+            fail("Fail to ThrowException------------------isTrue");
+        } catch (ProcessException expectedException) {
+        }
+
+        try {
+            validation().val(123, 123).isTrue().throwValidate();
+            fail("Fail to ThrowException------------------isTrue");
+        } catch (ProcessException expectedException) {
+        }
+
+        try {
+            validation().val(true, false).isTrue().throwValidate();
+
+            fail("Fail to ThrowException------------------isTrue");
+        } catch (ProcessException expectedException) {
+        }
+    }
+
+    @Test
+    public void equalTest() {
+
+        assertFalse(validation().val(100, 50).equal().isValid());
+        assertTrue(validation().val(100, 100).equal().isValid());
+
+        assertFalse(validation().val(100).equal(50).isValid());
+        assertFalse(validation().val(50).equal(100).isValid());
+        assertTrue(validation().val(100).equal(100).isValid());
+        assertFalse(validation().equal(50, 100).isValid());
+        assertTrue(validation().equal(100, 100).isValid());
+
+
+        try {
+            assertTrue(validation().val().equal(100).isValid());
+
+            fail("Fail to ThrowException------------------equalTest-dont enter value");
+        } catch (RuntimeException e) {
+            assertEquals("Please enter '1' value for this validation!", e.getMessage());
+        }
+
+        try {
+            validation().val(50).equal(100).throwValidate();
+
+            fail("Fail to ThrowException------------------equalTest-dont enter value");
+        } catch (RuntimeException e) {
+            assertEquals("GENERAL_VALUE_IS_NOT_EQUAL", e.getMessage());
+        }
+    }
+
+    @Test
+    public void isNotEqualsTest() {
+
+        assertFalse(validation().val(100, 100).isNotEquals().isValid());
+        assertTrue(validation().val(100, 50).isNotEquals().isValid());
+
+        assertFalse(validation().val(100).isNotEquals(100).isValid());
+        assertTrue(validation().val(50).isNotEquals(100).isValid());
+        assertTrue(validation().val(100).isNotEquals(50).isValid());
+        assertFalse(validation().isNotEquals(100, 100).isValid());
+        assertTrue(validation().isNotEquals(20, 100).isValid());
+
+
+        try {
+            assertTrue(validation().val().isNotEquals(100).isValid());
+
+            fail("Fail to ThrowException------------------equalTest-dont enter value");
+        } catch (RuntimeException e) {
+            assertEquals("Please enter '1' value for this validation!", e.getMessage());
+        }
+
+        try {
+            validation().val(100).isNotEquals(100).throwValidate();
+
+            fail("Fail to ThrowException------------------equalTest-dont enter value");
+        } catch (RuntimeException e) {
+            assertEquals("GENERAL_VALUE_IS_EQUAL", e.getMessage());
         }
     }
 

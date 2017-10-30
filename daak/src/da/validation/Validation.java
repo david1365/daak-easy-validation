@@ -576,38 +576,49 @@ public class Validation extends MethodManager {
     public Validation isBoolean() {
         return this.isBoolean(this.values);
     }
+
+    public Validation isTrue(Object...values) {
+        setValues(values);
+
+        return validate((inValues)-> {
+           return validation().isNotNull(inValues)
+                   .isBoolean()
+                    .ifValid((booleanValues)->{
+                        for (Object value: booleanValues) {
+                            if (!Boolean.valueOf(value.toString())){
+                                return validateMessage(ValidationType.GENERAL_IS_FALSE, ExceptionMessageCode.GENERAL_VALUE_IS_FALSE);
+                            }
+                        }
+
+                        return validateMessage(ValidationType.GENERAL_VALID);
+                    })
+                   .get();
+        });
+    }
+
+    public Validation isTrue() {
+        return this.isTrue(this.values);
+    }
+
+    public void argCheck(Integer argCount, Object...compareValues){
+        if (argCount > 0){
+            if (compareValues.length < argCount){
+                throw new RuntimeException("Please enter '" + argCount + "' value for this validation!");
+            }
+        }
+    }
+
+//    public <T extends Number & Comparable<? super T>> Validation max(Object...values) {
+//        setValues(values);
+//        argCheck(2, values);
 //
-//    public Validation isTrue(Boolean value) {
-//        setValue(value);
+//        return validate((inValues)-> {
+//            return validation().isNotNull(inValues)
+//                    .ifValid((notNullValues)->{
+//                        T value = (T) notNullValues[1];
+//                        T compareValue = (T) notNullValues[0];
 //
-//        return validate((inValue)-> {
-//           return validation().isNotNull(inValue)
-//                    .<Boolean,ValidateMessageDTO>ifValid((notNullValue)->{
-//
-//                            String validationType = notNullValue ? ValidationType.GENERAL_VALID : ValidationType.GENERAL_IS_FALSE;
-//
-//                            return validateMessage(validationType, ExceptionMessageCode.GENERAL_VALUE_IS_FALSE);
-//                    })
-//                   .get();
-//        });
-//    }
-//
-//    public Validation isTrue() {
-//        return this.isTrue((Boolean) this.value);
-//    }
-//
-//    private <T extends Number & Comparable<? super T>> void setBestValue(T compareValue){
-//        this.value2 = this.value;
-//        this.value = compareValue;
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation max(T compareValue, T value) {
-//        setValue(compareValue, value);
-//
-//        return validate((inCompareValue, inValue)-> {
-//            return validation().isNotNull(inCompareValue, inValue)
-//                    .<T, T, ValidateMessageDTO>ifValid((notNullCompareValue, notNullValue)->{
-//                        Boolean maxCheck = (notNullValue.compareTo(notNullCompareValue) > 0);
+//                        Boolean maxCheck = (value.compareTo(compareValue) > 0);
 //
 //                        String  validationType =  maxCheck ? ValidationType.GENERAL_MAX : ValidationType.GENERAL_VALID;
 //
@@ -617,14 +628,15 @@ public class Validation extends MethodManager {
 //        });
 //    }
 //
-//    public <T extends Number & Comparable<? super T>> Validation max(T compareValue) {
-//        setBestValue(compareValue);
-//
-//        return this.max((T) this.value, (T) this.value2);
+//    public <T extends Number & Comparable<? super T>> Validation max(T...compareValue) {
+//        argCheck(1, compareValue);
+//        argCheck(1, this.values);
+//        return this.max(compareValue[0], this.values[0]);
 //    }
 //
 //    public <T extends Number & Comparable<? super T>> Validation max() {
-//        return this.max((T) this.value, (T) this.value2);
+//        argCheck(2, this.values);
+//        return this.max(this.values);
 //    }
 //
 //    public <T extends Number & Comparable<? super T>> Validation min(T compareValue, T value) {
@@ -652,59 +664,68 @@ public class Validation extends MethodManager {
 //    public <T extends Number & Comparable<? super T>> Validation min() {
 //        return this.min((T) this.value, (T) this.value2);
 //    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation equals(T compareValue, T value) {
-//        setValue(compareValue, value);
-//
-//        return validate((inCompareValue, inValue)-> {
-//            return validation().isNotNull(inCompareValue, inValue)
-//                    .<T, T, ValidateMessageDTO>ifValid((notNullCompareValue, notNullValue)->{
-//                        Boolean checkEquals = (notNullValue.compareTo(notNullCompareValue) == 0);
-//
-//                        String  validationType = checkEquals ? ValidationType.GENERAL_VALID : ValidationType.GENERAL_NOT_EQUAL;
-//
-//                        return  validateMessage(validationType, ExceptionMessageCode.GENERAL_VALUE_IS_NOT_EQUAL);
-//                    })
-//                    .get();
-//        });
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation equals(T compareValue) {
-//        setBestValue(compareValue);
-//
-//        return this.equals((T) this.value, (T) this.value2);
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation equals() {
-//        return this.equals((T) this.value, (T) this.value2);
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation isNotEquals(T compareValue, T value) {
-//        setValue(compareValue, value);
-//
-//        return validate((inCompareValue, inValue)-> {
-//            return validation().isNotNull(inCompareValue, inValue)
-//                    .<T, T, ValidateMessageDTO>ifValid((notNullCompareValue, notNullValue)->{
-//                        Boolean checkisNotEquals = (notNullValue.compareTo(notNullCompareValue) != 0);
-//
-//                        String  validationType = checkisNotEquals ? ValidationType.GENERAL_VALID : ValidationType.GENERAL_EQUAL;
-//
-//                        return  validateMessage(validationType, ExceptionMessageCode.GENERAL_VALUE_IS_EQUAL);
-//                    })
-//                    .get();
-//        });
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation isNotEquals(T compareValue) {
-//        setBestValue(compareValue);
-//
-//        return this.isNotEquals((T) this.value, (T) this.value2);
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation isNotEquals() {
-//        return this.isNotEquals((T) this.value, (T) this.value2);
-//    }
-//
+
+    public <T extends Number & Comparable<? super T>> Validation equal(Object...values) {
+        setValues(values);
+        argCheck(2, values);
+
+        return validate((inValues)-> {
+            return validation().isNotNull(inValues)
+                    .ifValid((notNullValues)->{
+                        T value = (T) notNullValues[1];
+                        T compareValue = (T) notNullValues[0];
+
+                        Boolean checkEquals = (value.compareTo(compareValue) == 0);
+
+                        String  validationType = checkEquals ? ValidationType.GENERAL_VALID : ValidationType.GENERAL_NOT_EQUAL;
+
+                        return  validateMessage(validationType, ExceptionMessageCode.GENERAL_VALUE_IS_NOT_EQUAL);
+                    })
+                    .get();
+        });
+    }
+
+
+    public <T extends Number & Comparable<? super T>> Validation equal(T compareValue) {
+        argCheck(1, this.values);
+        return this.equal(compareValue, this.values[0]);
+    }
+
+    public <T extends Number & Comparable<? super T>> Validation equal() {
+        argCheck(2, this.values);
+        return this.equal(this.values);
+    }
+
+    public <T extends Number & Comparable<? super T>> Validation isNotEquals(Object...values) {
+        setValues(values);
+        argCheck(2, values);
+
+        return validate((inValues)-> {
+            return validation().isNotNull(inValues)
+                    .ifValid((notNullValues)->{
+                        T value = (T) notNullValues[1];
+                        T compareValue = (T) notNullValues[0];
+
+                        Boolean checkIsNotEquals = (value.compareTo(compareValue) != 0);
+
+                        String  validationType = checkIsNotEquals ? ValidationType.GENERAL_VALID : ValidationType.GENERAL_EQUAL;
+
+                        return  validateMessage(validationType, ExceptionMessageCode.GENERAL_VALUE_IS_EQUAL);
+                    })
+                    .get();
+        });
+    }
+
+    public <T extends Number & Comparable<? super T>> Validation isNotEquals(T compareValue) {
+        argCheck(1, this.values);
+        return this.isNotEquals(compareValue, this.values[0]);
+    }
+
+    public <T extends Number & Comparable<? super T>> Validation isNotEquals() {
+        argCheck(2, this.values);
+        return this.isNotEquals(this.values);
+    }
+
 //    public <T extends Number & Comparable<? super T>> Validation greaterThanOrEquals(T compareValue, T value) {
 //        setValue(compareValue, value);
 //
