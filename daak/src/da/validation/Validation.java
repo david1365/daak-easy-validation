@@ -19,7 +19,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Created by Akbari.David on 5/9/2017.
+ * Created by Akbari.Davood on 5/9/2017.
  */
 public class Validation extends MethodManager {
     //TODO: remove static from this fields if need
@@ -395,72 +395,82 @@ public class Validation extends MethodManager {
         return this.isNull(this.values);
     }
 
-//    public <T> Validation itemsIsNotNull(Collection...collections) {
-//        setValues(collections);
-//
-//        return validate((inCollections)-> {
-//            for(Object collection: inCollections){
-//                for(Object entity: (Collection)collection){
-//                    if (entity == null) {
-//                        return validateMessage(ValidationType.GENERAL_COLLECTION_VALUE_NULL,
-//                                ExceptionMessageCode.GENERAL_VALUE_OF_LIST_IS_EMPTY);
-//                    }
-//                }
-//            }
-//
-//            return validateMessage(ValidationType.GENERAL_VALID);
-//        });
-//    }
-//
-//    public Validation collectionsIsEmpty(Collection...collections) {
-//        setValues(collections);
-//
-//        return validate((inCollections)-> {
-//            return validation().isNotNull(inCollections)
-//                        .ifValid((notNullCollections)->{
-//                            for(Object collection: notNullCollections){
-//                                if(((Collection) collection).isEmpty()){
-//                                    return validateMessage(ValidationType.GENERAL_COLLECTION_NULL
-//                                                , ExceptionMessageCode.GENERAL_LIST_IS_EMPTY);
-//                                }
-//                            }
-//
-//                            return validateMessage(ValidationType.GENERAL_VALID);
-//                        })
-//                        .get();
-//
-//        });
-//    }
+    public <T> Validation itemsIsNotNull(Object...collections) {
+        setValues(collections);
 
-//    public Validation collectionIsEmpty() {
-//        return this.collectionIsEmpty(this.values);
-//    }
+        return validate((inCollections)-> {
+            for(Object collection: inCollections){
+                for(Object entity: (Collection)collection){
+                    if (entity == null) {
+                        return validateMessage(ValidationType.GENERAL_COLLECTION_VALUE_NULL,
+                                ExceptionMessageCode.GENERAL_VALUE_OF_LIST_IS_EMPTY);
+                    }
+                }
+            }
 
-//    public Validation collectionSingleRow(Collection collection) {
-//        setValue(collection);
-//
-//        return validate((inCollection)-> {
-//            return validation().isNotNull(inCollection)
-//                    .<Collection, ValidateMessageDTO>ifValid((notNullCollection)->{
-//                            String validationType = notNullCollection.size() != 1 ? ValidationType.GENERAL_COLLECTION_DUPLICATED : ValidationType.GENERAL_VALID;
-//
-//                            return new ValidateMessageDTO(validationType, ExceptionMessageCode.GENERAL_COLLECTION_DUPLICATED_ROW);
-//                    })
-//                    .get();
-//        });
-//    }
-//
-//    public Validation collectionSingleRow() {
-//        return this.collectionSingleRow((Collection) this.value);
-//    }
-//
+            return validateMessage(ValidationType.GENERAL_VALID);
+        });
+    }
+
+    public Validation itemsIsNotNull() {
+        return this.itemsIsNotNull(this.values);
+    }
+
+    public Validation collectionsIsEmpty(Object...collections) {
+        setValues(collections);
+
+        return validate((inCollections)-> {
+            return validation().isNotNull(inCollections)
+                        .ifValid((notNullCollections)->{
+                            for(Object collection: notNullCollections){
+                                if(((Collection) collection).isEmpty()){
+                                    return validateMessage(ValidationType.GENERAL_COLLECTION_NULL
+                                                , ExceptionMessageCode.GENERAL_LIST_IS_EMPTY);
+                                }
+                            }
+
+                            return validateMessage(ValidationType.GENERAL_VALID);
+                        })
+                        .get();
+
+        });
+    }
+
+    public Validation collectionsIsEmpty() {
+        return this.collectionsIsEmpty(this.values);
+    }
+
+    public Validation collectionsSingleRow(Object...collections) {
+        setValues(collections);
+
+        return validate((inCollections)-> {
+            return validation().isNotNull(inCollections)
+                    .ifValid((notNullCollections)-> {
+                        for (Object collection : notNullCollections) {
+                            if (((Collection) collection).size() != 1) {
+                                return validateMessage(ValidationType.GENERAL_COLLECTION_DUPLICATED
+                                        , ExceptionMessageCode.GENERAL_COLLECTION_DUPLICATED_ROW);
+                            }
+                        }
+
+                        return validateMessage(ValidationType.GENERAL_VALID);
+                    })
+                    .get();
+        });
+    }
+
+    public Validation collectionsSingleRow() {
+        return this.collectionsSingleRow(this.values);
+    }
+
+
 //    public <T> Validation checkUnique(Collection<T> entities, Object fieldName) {
-//        setValue(entities, fieldName);
+//        setValues(entities, fieldName);
 //
 //        Map<String, Integer> counted = new HashMap<>();
 //
 //        return validate((inEntities, inFieldName)-> {
-//            validation().collectionIsEmpty((Collection) inEntities).throwValidateMessage(ExceptionMessageCode.GENERAL_LIST_IS_EMPTY_OR_NOT_CORRECT);
+//            validation().collectionsIsEmpty(inEntities).throwValidateMessage(ExceptionMessageCode.GENERAL_LIST_IS_EMPTY_OR_NOT_CORRECT);
 //
 //            for(Object entity: (Collection)inEntities){
 //                validation().isNotNull(entity).throwValidateMessage(ExceptionMessageCode.GENERAL_VALUE_OF_LIST_IS_EMPTY);
@@ -480,6 +490,15 @@ public class Validation extends MethodManager {
 //            return validateMessage(ValidationType.GENERAL_VALID);
 //        });
 //    }
+
+//    public  Validation checkUnique(){
+//       return this.checkUnique((Collection) this.value, this.value2);
+//    }
+//
+//    public  Validation checkUnique(Object fieldName){
+//        return this.checkUnique((Collection) this.value, fieldName);
+//    }
+
 //
 //    public Validation checkUniqueValue(Object value){
 //        setValue(value);
@@ -503,13 +522,6 @@ public class Validation extends MethodManager {
 //        return this.checkUniqueValue(this.value);
 //    }
 //
-//    public  Validation checkUnique(){
-//       return this.checkUnique((Collection) this.value, this.value2);
-//    }
-//
-//    public  Validation checkUnique(Object fieldName){
-//        return this.checkUnique((Collection) this.value, fieldName);
-//    }
 ////--------------------------------------------
     public Validation isText(Object...values) {
         setValues(values);
@@ -726,107 +738,126 @@ public class Validation extends MethodManager {
         return this.isNotEquals(this.values);
     }
 
-//    public <T extends Number & Comparable<? super T>> Validation greaterThanOrEquals(T compareValue, T value) {
-//        setValue(compareValue, value);
-//
-//        return validate((inCompareValue, inValue)-> {
-//            return validation().isNotNull(inCompareValue, inValue)
-//                    .<T, T, ValidateMessageDTO>ifValid((notNullCompareValue, notNullValue)->{
-//                        Boolean checkGreaterThanOrEqual = (notNullValue.compareTo(notNullCompareValue) == 0) || (notNullValue.compareTo(notNullCompareValue) > 0);
-//
-//                        String  validationType = checkGreaterThanOrEqual ? ValidationType.GENERAL_VALID : ValidationType.GENERAL_NOT_GREATER_THAN_OR_EQUAL;
-//
-//                        return  validateMessage(validationType, ExceptionMessageCode.GENERAL_VALUE_IS_NOT_GREATER_THAN_OR_EQUAL);
-//                    })
-//                    .get();
-//        });
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation greaterThanOrEquals(T compareValue) {
-//        setBestValue(compareValue);
-//
-//        return this.greaterThanOrEquals((T) this.value, (T) this.value2);
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation greaterThanOrEquals() {
-//        return this.greaterThanOrEquals((T) this.value, (T) this.value2);
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation greaterThan(T compareValue, T value) {
-//        setValue(compareValue, value);
-//
-//        return validate((inCompareValue, inValue)-> {
-//            return validation().isNotNull(inCompareValue, inValue)
-//                    .<T, T, ValidateMessageDTO>ifValid((notNullCompareValue, notNullValue)->{
-//
-//                        String  validationType = (notNullValue.compareTo(notNullCompareValue) > 0) ? ValidationType.GENERAL_VALID : ValidationType.GENERAL_NOT_GREATER_THAN;
-//
-//                        return  validateMessage(validationType, ExceptionMessageCode.GENERAL_VALUE_IS_NOT_GREATER_THAN);
-//                    })
-//                    .get();
-//        });
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation greaterThan(T compareValue) {
-//        setBestValue(compareValue);
-//
-//        return this.greaterThan((T) this.value, (T) this.value2);
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation greaterThan() {
-//        return this.greaterThan((T) this.value, (T) this.value2);
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation lessThanOrEquals(T compareValue, T value) {
-//        setValue(compareValue, value);
-//
-//        return validate((inCompareValue, inValue)-> {
-//            return validation().isNotNull(inCompareValue, inValue)
-//                    .<T, T, ValidateMessageDTO>ifValid((notNullCompareValue, notNullValue)->{
-//                        Boolean checklessThanOrEqual = (notNullValue.compareTo(notNullCompareValue) == 0) || (notNullValue.compareTo(notNullCompareValue) < 0);
-//
-//                        String  validationType = checklessThanOrEqual ? ValidationType.GENERAL_VALID : ValidationType.GENERAL_NOT_LESS_THAN_OR_EQUAL;
-//
-//                        return  validateMessage(validationType, ExceptionMessageCode.GENERAL_VALUE_IS_NOT_LESS_THAN_OR_EQUAL);
-//                    })
-//                    .get();
-//        });
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation lessThanOrEquals(T compareValue) {
-//        setBestValue(compareValue);
-//
-//        return this.lessThanOrEquals((T) this.value, (T) this.value2);
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation lessThanOrEquals() {
-//        return this.lessThanOrEquals((T) this.value, (T) this.value2);
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation lessThan(T compareValue, T value) {
-//        setValue(compareValue, value);
-//
-//        return validate((inCompareValue, inValue)-> {
-//            return validation().isNotNull(inCompareValue, inValue)
-//                    .<T, T, ValidateMessageDTO>ifValid((notNullCompareValue, notNullValue)->{
-//
-//                        String  validationType = (notNullValue.compareTo(notNullCompareValue) < 0) ? ValidationType.GENERAL_VALID : ValidationType.GENERAL_NOT_LESS_THAN;
-//
-//                        return  validateMessage(validationType, ExceptionMessageCode.GENERAL_VALUE_IS_NOT_LESS_THAN);
-//                    })
-//                    .get();
-//        });
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation lessThan(T compareValue) {
-//        setBestValue(compareValue);
-//
-//        return this.lessThan((T) this.value, (T) this.value2);
-//    }
-//
-//    public <T extends Number & Comparable<? super T>> Validation lessThan() {
-//        return this.lessThan((T) this.value, (T) this.value2);
-//    }
+    public <T extends Number & Comparable<? super T>> Validation greaterThanOrEquals(Object...values) {
+        setValues(values);
+        argCheck(2, values);
+
+        return validate((inValues)-> {
+            return validation().isNotNull(inValues)
+                    .ifValid((notNullValues)->{
+                        T value = (T) notNullValues[1];
+                        T compareValue = (T) notNullValues[0];
+
+                        Boolean checkGreaterThanOrEqual = (value.compareTo(compareValue) == 0) || (value.compareTo(compareValue) > 0);
+
+                        String  validationType = checkGreaterThanOrEqual ? ValidationType.GENERAL_VALID : ValidationType.GENERAL_NOT_GREATER_THAN_OR_EQUAL;
+
+                        return  validateMessage(validationType, ExceptionMessageCode.GENERAL_VALUE_IS_NOT_GREATER_THAN_OR_EQUAL);
+                    })
+                    .get();
+        });
+    }
+
+    public <T extends Number & Comparable<? super T>> Validation greaterThanOrEquals(T compareValue) {
+        argCheck(1, this.values);
+        return this.greaterThanOrEquals(compareValue, this.values[0]);
+    }
+
+    public <T extends Number & Comparable<? super T>> Validation greaterThanOrEquals() {
+        argCheck(2, this.values);
+        return this.greaterThanOrEquals(this.values);
+    }
+
+    public <T extends Number & Comparable<? super T>> Validation greaterThan(Object...values) {
+        setValues(values);
+        argCheck(2, values);
+
+        return validate((inValues)-> {
+            return validation().isNotNull(inValues)
+                    .ifValid((notNullValues)->{
+                        T value = (T) notNullValues[1];
+                        T compareValue = (T) notNullValues[0];
+
+                        Boolean checkGreaterThanOrEqual = (value.compareTo(compareValue) > 0);
+
+                        String  validationType = checkGreaterThanOrEqual ? ValidationType.GENERAL_VALID : ValidationType.GENERAL_NOT_GREATER_THAN;
+
+                        return  validateMessage(validationType, ExceptionMessageCode.GENERAL_VALUE_IS_NOT_GREATER_THAN);
+                    })
+                    .get();
+        });
+    }
+
+    public <T extends Number & Comparable<? super T>> Validation greaterThan(T compareValue) {
+        argCheck(1, this.values);
+        return this.greaterThan(compareValue, this.values[0]);
+    }
+
+    public <T extends Number & Comparable<? super T>> Validation greaterThan() {
+        argCheck(2, this.values);
+        return this.greaterThan(this.values);
+    }
+
+    public <T extends Number & Comparable<? super T>> Validation lessThanOrEquals(Object...values) {
+        setValues(values);
+        argCheck(2, values);
+
+        return validate((inValues)-> {
+            return validation().isNotNull(inValues)
+                    .ifValid((notNullValues)->{
+                        T value = (T) notNullValues[1];
+                        T compareValue = (T) notNullValues[0];
+
+                        Boolean checkGreaterThanOrEqual = (value.compareTo(compareValue) == 0) || (value.compareTo(compareValue) < 0);
+
+                        String  validationType = checkGreaterThanOrEqual ? ValidationType.GENERAL_VALID : ValidationType.GENERAL_NOT_LESS_THAN_OR_EQUAL;
+
+                        return  validateMessage(validationType, ExceptionMessageCode.GENERAL_VALUE_IS_NOT_LESS_THAN_OR_EQUAL);
+                    })
+                    .get();
+        });
+    }
+
+
+    public <T extends Number & Comparable<? super T>> Validation lessThanOrEquals(T compareValue) {
+        argCheck(1, this.values);
+        return this.lessThanOrEquals(compareValue, this.values[0]);
+    }
+
+    public <T extends Number & Comparable<? super T>> Validation lessThanOrEquals() {
+         argCheck(2, this.values);
+         return this.lessThanOrEquals(this.values);
+    }
+
+    public <T extends Number & Comparable<? super T>> Validation lessThan(Object...values) {
+        setValues(values);
+        argCheck(2, values);
+
+        return validate((inValues)-> {
+            return validation().isNotNull(inValues)
+                    .ifValid((notNullValues)->{
+                        T value = (T) notNullValues[1];
+                        T compareValue = (T) notNullValues[0];
+
+                        Boolean checkGreaterThanOrEqual = (value.compareTo(compareValue) < 0);
+
+                        String  validationType = checkGreaterThanOrEqual ? ValidationType.GENERAL_VALID : ValidationType.GENERAL_NOT_LESS_THAN;
+
+                        return  validateMessage(validationType, ExceptionMessageCode.GENERAL_VALUE_IS_NOT_LESS_THAN);
+                    })
+                    .get();
+        });
+    }
+
+    public <T extends Number & Comparable<? super T>> Validation lessThan(T compareValue) {
+        argCheck(1, this.values);
+        return this.lessThan(compareValue, this.values[0]);
+    }
+
+    public <T extends Number & Comparable<? super T>> Validation lessThan() {
+        argCheck(2, this.values);
+        return this.lessThan(this.values);
+    }
 
     public <T> T getIfResult() {
         return (T) this.ifResult;

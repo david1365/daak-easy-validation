@@ -22,32 +22,43 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * Created by Akbari.David on 5/7/2017.
+ * Created by Akbari.Davood on 5/7/2017.
  */
 public class ValidationTest {
 
     @Test
-    public void itemsNotNullTest(){
-//        List<String> list = new ArrayList<>();
-//        list.add("1");
-//        list.add("1");
-//        list.add(null);
-//        list.add("1");
-//
-//        assertFalse(validation().itemsIsNotNull(list).isValid());
-//
-//        List<String> list2 = new ArrayList<>();
-//        list.add("1");
-//        list.add("1");
-//        assertTrue(validation().itemsIsNotNull(list2).isValid());
+    public void itemsNotNullTest() {
+        List<String> list = new ArrayList<>();
+        list.add("1");
+        list.add("1");
+        list.add(null);
+        list.add("1");
+
+        assertFalse(validation().itemsIsNotNull(list, list, list).isValid());
+
+        List<String> list2 = new ArrayList<>();
+        list2.add("1");
+        list2.add("1");
+        assertTrue(validation().itemsIsNotNull(list2, list2, list2).isValid());
+
+        assertTrue(validation().val(list2, list2, list2).itemsIsNotNull().isValid());
+        assertFalse(validation().val(list2, list2, list).itemsIsNotNull().isValid());
+
+        try {
+            validation().itemsIsNotNull(list, list, list).throwValidate();
+
+            fail("Fail to ThrowException------------------itemsNotNullTest-dont enter value");
+        } catch (RuntimeException e) {
+            assertEquals("GENERAL_VALUE_OF_LIST_IS_EMPTY", e.getMessage());
+        }
     }
 
     @Test
     public void validationPublic(){
         System.out.println(">>>--validationPublic--------------------------------------------------<<<");
 
-//        assertTrue(validation().isNotNull("textTest")
-//                .andValidate(BusinessValidation::validateString).isValid());
+        assertTrue(validation().isNotNull("textTest")
+                .andValidate(BusinessValidation::validateString).isValid());
 //
 //        assertEquals("text12", validation().isNotNull("textTest")
 //                 .andValidate(BusinessValidation::validateString).ifValid(()->{
@@ -439,7 +450,7 @@ public class ValidationTest {
         try {
             assertTrue(validation().val().isNotEquals(100).isValid());
 
-            fail("Fail to ThrowException------------------equalTest-dont enter value");
+            fail("Fail to ThrowException------------------isNotEqualsTest-dont enter value");
         } catch (RuntimeException e) {
             assertEquals("Please enter '1' value for this validation!", e.getMessage());
         }
@@ -447,14 +458,178 @@ public class ValidationTest {
         try {
             validation().val(100).isNotEquals(100).throwValidate();
 
-            fail("Fail to ThrowException------------------equalTest-dont enter value");
+            fail("Fail to ThrowException------------------isNotEqualsTest-dont enter value");
         } catch (RuntimeException e) {
             assertEquals("GENERAL_VALUE_IS_EQUAL", e.getMessage());
         }
     }
 
+    @Test
+    public void greaterThanOrEqualsTest() {
+
+        assertTrue(validation().val(100, 100).greaterThanOrEquals().isValid());
+        assertFalse(validation().val(100, 50).greaterThanOrEquals().isValid());
+        assertTrue(validation().val(50, 500).greaterThanOrEquals().isValid());
+
+        assertTrue(validation().val(100).greaterThanOrEquals(100).isValid());
+        assertFalse(validation().val(50).greaterThanOrEquals(100).isValid());
+        assertTrue(validation().val(100).greaterThanOrEquals(50).isValid());
+        assertTrue(validation().greaterThanOrEquals(100, 100).isValid());
+        assertTrue(validation().greaterThanOrEquals(20, 100).isValid());
+
+
+        try {
+            assertTrue(validation().val().greaterThanOrEquals(100).isValid());
+
+            fail("Fail to ThrowException------------------greaterThanOrEqualsTest-dont enter value");
+        } catch (RuntimeException e) {
+            assertEquals("Please enter '1' value for this validation!", e.getMessage());
+        }
+
+        try {
+            validation().val(50).greaterThanOrEquals(100).throwValidate();
+
+            fail("Fail to ThrowException------------------greaterThanOrEqualsTest-dont enter value");
+        } catch (RuntimeException e) {
+            assertEquals("GENERAL_VALUE_IS_NOT_GREATER_THAN_OR_EQUAL", e.getMessage());
+        }
+    }
+
+    @Test
+    public void greaterThanTest() {
+        assertFalse(validation().val(100, 100).greaterThan().isValid());
+        assertFalse(validation().val(100, 50).greaterThan().isValid());
+        assertTrue(validation().val(50, 500).greaterThan().isValid());
+
+        assertFalse(validation().val(100).greaterThan(100).isValid());
+        assertFalse(validation().val(50).greaterThan(100).isValid());
+        assertTrue(validation().val(100).greaterThan(50).isValid());
+        assertFalse(validation().greaterThan(100, 100).isValid());
+        assertTrue(validation().greaterThan(20, 100).isValid());
+
+
+        try {
+            assertTrue(validation().val().greaterThan(100).isValid());
+
+            fail("Fail to ThrowException------------------greaterThanTest-dont enter value");
+        } catch (RuntimeException e) {
+            assertEquals("Please enter '1' value for this validation!", e.getMessage());
+        }
+
+        try {
+            validation().val(50).greaterThan(100).throwValidate();
+
+            fail("Fail to ThrowException------------------greaterThanTest-dont enter value");
+        } catch (RuntimeException e) {
+            assertEquals("GENERAL_VALUE_IS_NOT_GREATER_THAN", e.getMessage());
+        }
+    }
+
+    @Test
+    public void lessThanOrEqualsTest() {
+        assertTrue(validation().val(100, 100).lessThanOrEquals().isValid());
+        assertTrue(validation().val(100, 50).lessThanOrEquals().isValid());
+        assertFalse(validation().val(50, 500).lessThanOrEquals().isValid());
+
+        assertTrue(validation().val(100).lessThanOrEquals(100).isValid());
+        assertTrue(validation().val(50).lessThanOrEquals(100).isValid());
+        assertFalse(validation().val(100).lessThanOrEquals(50).isValid());
+        assertTrue(validation().lessThanOrEquals(100, 100).isValid());
+        assertFalse(validation().lessThanOrEquals(20, 100).isValid());
+
+
+        try {
+            assertTrue(validation().val().lessThanOrEquals(100).isValid());
+
+            fail("Fail to ThrowException------------------lessThanOrEqualsTest-dont enter value");
+        } catch (RuntimeException e) {
+            assertEquals("Please enter '1' value for this validation!", e.getMessage());
+        }
+
+        try {
+            validation().val(100).lessThanOrEquals(50).throwValidate();
+
+            fail("Fail to ThrowException------------------lessThanOrEqualsTest-dont enter value");
+        } catch (RuntimeException e) {
+            assertEquals("GENERAL_VALUE_IS_NOT_LESS_THAN_OR_EQUAL", e.getMessage());
+        }
+    }
+
+    @Test
+    public void lessThanTest() {
+        assertFalse(validation().val(100, 100).lessThan().isValid());
+        assertTrue(validation().val(100, 50).lessThan().isValid());
+        assertFalse(validation().val(50, 500).lessThan().isValid());
+
+        assertFalse(validation().val(100).lessThan(100).isValid());
+        assertTrue(validation().val(50).lessThan(100).isValid());
+        assertFalse(validation().val(100).lessThan(50).isValid());
+        assertFalse(validation().lessThan(100, 100).isValid());
+        assertFalse(validation().lessThan(20, 100).isValid());
+
+
+        try {
+            assertTrue(validation().val().lessThan(100).isValid());
+
+            fail("Fail to ThrowException------------------lessThanTest-dont enter value");
+        } catch (RuntimeException e) {
+            assertEquals("Please enter '1' value for this validation!", e.getMessage());
+        }
+
+        try {
+            validation().val(100).lessThan(50).throwValidate();
+
+            fail("Fail to ThrowException------------------lessThanTest-dont enter value");
+        } catch (RuntimeException e) {
+            assertEquals("GENERAL_VALUE_IS_NOT_LESS_THAN", e.getMessage());
+        }
+    }
+
     public static ValidateMessageDTO supplierValidateTest() {
         return new ValidateMessageDTO(ValidationType.GENERAL_OBJECT_NULL);
+    }
+
+    @Test
+    public void collectionsIsEmptyTest() {
+        try {
+            validation().val(new ArrayList<>(), new ArrayList<>()).collectionsIsEmpty().throwValidate();
+
+            fail( "Fail to ThrowException ---------<<<<<<--collectionsIsEmptyTest->>>>>" );
+        } catch (RuntimeException e) {
+            assertEquals("GENERAL_LIST_IS_EMPTY", e.getMessage());
+        }
+
+
+        List<String> list2 = new ArrayList<>();
+        list2.add("1");
+        list2.add("1");
+
+        assertTrue(validation().val(list2, list2, list2).collectionsIsEmpty().isValid());
+        assertFalse(validation().val(new ArrayList<>(), new ArrayList<>()).collectionsIsEmpty().isValid());
+        assertFalse(validation().val(list2, list2, new ArrayList<>()).collectionsIsEmpty().isValid());
+    }
+
+    @Test
+    public void collectionSingleRowTest() {
+        List list1 = new ArrayList<String>(){{
+            add("text");
+        }} ;
+
+        List list2 = new ArrayList<String>(){{
+            add("text");
+            add("text");
+        }} ;
+
+        try {
+             validation().val(list1, list2).collectionsSingleRow().throwValidate();
+
+            fail( "Fail to ThrowException ---------<<<<<<--collectionSingleRowTest-->>>>>" );
+        } catch (RuntimeException e) {
+            assertEquals("GENERAL_COLLECTION_DUPLICATED_ROW", e.getMessage());
+        }
+
+        assertFalse(validation().val(list1, list2).collectionsSingleRow().isValid());
+        assertTrue(validation().val(list1, list1).collectionsSingleRow().isValid());
     }
 
     @Test
@@ -536,25 +711,8 @@ public class ValidationTest {
 //        }
 //
 //        //--validateCollection------------------------------------------
-//        try {
-//            // String str = null;
-//            validation().val(new ArrayList<>()).collectionIsEmpty().throwValidate();
-//
-//            fail( "Fail to ThrowException ---------<<<<<<--validateCollection-->>>>>" );
-//        } catch (ProcessException expectedException) {
-//        }
 //
 //        //--collectionSingleSingleRow------------------------------------------
-//        try {
-//             List list = new ArrayList<String>(){{
-//                add("text");
-//                add("text");
-//             }} ;
-//             validation().val(list).collectionSingleRow().throwValidate();
-//
-//            fail( "Fail to ThrowException ---------<<<<<<--collectionSingleRow-->>>>>" );
-//        } catch (ProcessException expectedException) {
-//        }
     }
     public static ValidateMessageDTO throwValidateTest(){
         return new ValidateMessageDTO(ValidationType.GENERAL_OBJECT_NULL);
@@ -576,7 +734,7 @@ public class ValidationTest {
 //        customerGroups.add(customerGroup);
 //        customerGroups.add(customerGroup2);
 //        customerGroups.add(customerGroup3);
-//
+
 //        try {
 //           // String str = null;
 //            validation().val(customerGroups, CustomerGroup.FieldNames.TITLE).throwValidate(BusinessValidation::checkUnique)
@@ -585,7 +743,7 @@ public class ValidationTest {
 //            fail( "Fail to ThrowException" );
 //        } catch (ProcessException expectedException) {
 //        }
-//
+
 //        try {
 //            validation().val(customerGroups, CustomerGroup.FieldNames.TITLE).checkUnique().throwValidate();
 //
